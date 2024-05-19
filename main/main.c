@@ -1,12 +1,3 @@
-/* Simple HTTP Server Example
-
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
-
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
-*/
-
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -93,11 +84,10 @@ static esp_err_t basic_auth_get_handler(httpd_req_t *req)
             return ESP_ERR_NO_MEM;
         }
 
-        if (httpd_req_get_hdr_value_str(req, "Authorization", buf, buf_len) == ESP_OK) {
+        if (httpd_req_get_hdr_value_str(req, "Authorization", buf, buf_len) == ESP_OK)
             ESP_LOGI(TAG, "Found header => Authorization: %s", buf);
-        } else {
+        else
             ESP_LOGE(TAG, "No auth value received");
-        }
 
         char *auth_credentials = http_auth_basic(basic_auth_info->username, basic_auth_info->password);
         if (!auth_credentials) {
@@ -396,13 +386,15 @@ static httpd_handle_t start_webserver(void)
 {
     httpd_handle_t server = NULL;
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
-#if CONFIG_IDF_TARGET_LINUX
+
+    #if CONFIG_IDF_TARGET_LINUX
     // Setting port as 8001 when building for Linux. Port 80 can be used only by a privileged user in linux.
     // So when a unprivileged user tries to run the application, it throws bind error and the server is not started.
     // Port 8001 can be used by an unprivileged user as well. So the application will not throw bind error and the
     // server will be started.
     config.server_port = 8001;
-#endif // !CONFIG_IDF_TARGET_LINUX
+    #endif // !CONFIG_IDF_TARGET_LINUX
+           
     config.lru_purge_enable = true;
 
     // Start the httpd server
@@ -437,16 +429,14 @@ static void disconnect_handler(void* arg, esp_event_base_t event_base,
     httpd_handle_t* server = (httpd_handle_t*) arg;
     if (*server) {
         ESP_LOGI(TAG, "Stopping webserver");
-        if (stop_webserver(*server) == ESP_OK) {
+        if (stop_webserver(*server) == ESP_OK)
             *server = NULL;
-        } else {
+        else
             ESP_LOGE(TAG, "Failed to stop http server");
-        }
     }
 }
 
-static void connect_handler(void* arg, esp_event_base_t event_base,
-                            int32_t event_id, void* event_data)
+static void connect_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data)
 {
     httpd_handle_t* server = (httpd_handle_t*) arg;
     if (*server == NULL) {
@@ -464,15 +454,10 @@ void app_main(void)
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
 
-    /* This helper function configures Wi-Fi or Ethernet, as selected in menuconfig.
-     * Read "Establishing Wi-Fi or Ethernet Connection" section in
-     * examples/protocols/README.md for more information about this function.
-     */
+    // TODO
+    // Keep the connection information in a better way instead of menu config
     ESP_ERROR_CHECK(example_connect());
 
-    /* Register event handlers to stop the server when Wi-Fi or Ethernet is disconnected,
-     * and re-start it upon connection.
-     */
 #if !CONFIG_IDF_TARGET_LINUX
 #ifdef CONFIG_EXAMPLE_CONNECT_WIFI
     ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &connect_handler, &server));

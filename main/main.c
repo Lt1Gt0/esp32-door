@@ -1,5 +1,4 @@
 /* TODO
- * Add route to web server to toggle led on or off (debug)
  * Control Motor from webserver
  *  Toggle Spin direction of motor from web server
  *  Show status of motor spinning or not spinning
@@ -27,17 +26,9 @@ Motor MotorA = {
 // This is soley just to mess with the esp32 interface
 void app_main(void)
 {
+    // Setup WIFI API
+    esp_err_t wifiStatus = 
     InitializeMotor(&MotorA);
 
-    while (true) {
-        EnableMotor(&MotorA);
-        SpinMotorForward(&MotorA);
-        vTaskDelay(5000 / portTICK_PERIOD_MS);
 
-        SpinMotorBackward(&MotorA);
-        vTaskDelay(5000 / portTICK_PERIOD_MS);
-
-        DisableMotor(&MotorA);
-        vTaskDelay(5000 / portTICK_PERIOD_MS);
-    }
 }

@@ -1,8 +1,5 @@
 /* TODO
- * Configure LED to GPIO for testing
  * Add route to web server to toggle led on or off (debug)
- * Connect relay to esp32
- * Connect motor to relay and ESP32 circuit
  * Control Motor from webserver
  *  Toggle Spin direction of motor from web server
  *  Show status of motor spinning or not spinning
@@ -19,25 +16,36 @@
 #include "freertos/task.h"
 #include "unistd.h"
 
+const int MOTOR_A_ENABLE = GPIO_NUM_21;
+const int MOTOR_A_IN_1 = GPIO_NUM_19;
+const int MOTOR_A_IN_2 = GPIO_NUM_18;
+
 // This is soley just to mess with the esp32 interface
 void app_main(void)
 {
-    gpio_reset_pin(GPIO_NUM_1);
-    gpio_reset_pin(GPIO_NUM_2);
+    gpio_reset_pin(MOTOR_A_ENABLE);
+    gpio_reset_pin(MOTOR_A_IN_1);
+    gpio_reset_pin(MOTOR_A_IN_2);
 
-    gpio_set_direction(GPIO_NUM_1, GPIO_MODE_OUTPUT);
-    gpio_set_direction(GPIO_NUM_2, GPIO_MODE_OUTPUT);
+    gpio_set_direction(MOTOR_A_ENABLE, GPIO_MODE_OUTPUT);
+    gpio_set_direction(MOTOR_A_IN_1, GPIO_MODE_OUTPUT);
+    gpio_set_direction(MOTOR_A_IN_2, GPIO_MODE_OUTPUT);
+
 
     while (true) {
-        gpio_set_level(GPIO_NUM_1, 1);
-        gpio_set_level(GPIO_NUM_2, 1);
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        gpio_set_level(MOTOR_A_ENABLE, 1);
+        gpio_set_level(MOTOR_A_IN_1, 1);
+        gpio_set_level(MOTOR_A_IN_2, 0);
+        vTaskDelay(5000 / portTICK_PERIOD_MS);
 
-        gpio_set_level(GPIO_NUM_1, 0);
-        gpio_set_level(GPIO_NUM_2, 0);
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        gpio_set_level(MOTOR_A_IN_1, 0);
+        gpio_set_level(MOTOR_A_IN_2, 1);
+        vTaskDelay(5000 / portTICK_PERIOD_MS);
+
+        gpio_set_level(MOTOR_A_ENABLE, 0);
+        gpio_set_level(MOTOR_A_IN_2, 0);
+        vTaskDelay(5000 / portTICK_PERIOD_MS);
     }
-
 }
 
 // #include <string.h>

@@ -23,6 +23,7 @@
 #include "unistd.h"
 #include "motor.h"
 #include "secret.c"
+#include "server.h"
 
 //#include <string.h>
 
@@ -154,6 +155,8 @@ esp_err_t WifiInitPhase()
 // This is soley just to mess with the esp32 interface
 void app_main(void)
 {
+    static httpd_handle_t server = NULL;
+
     // Setup the storage
     ESP_ERROR_CHECK(nvs_flash_init());
 
@@ -164,10 +167,11 @@ void app_main(void)
         return;
     }
 
+    // Setup the motors
     InitializeMotor(&MotorA);
 
-    // while (1) {
-    //     SpinMotorForward(&MotorA);
-    //     vTaskDelay(1000 / portTICK_PERIOD_MS);
-    // }
+    server = startWebserver();
+    while (server) {
+        sleep(5);
+    }
 }

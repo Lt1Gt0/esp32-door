@@ -1,1 +1,73 @@
 #include "server.h"
+
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <esp_log.h>
+#include <nvs_flash.h>
+#include <sys/param.h>
+#include <esp_http_server.h>
+#include <esp_wifi.h>
+#include <esp_system.h>
+
+static const char* TAG = "server";
+
+static esp_err_t GetHelloWorldHandler(httpd_req_t* req)
+{
+    const char resp[] = "Hello World";
+    httpd_resp_send(req, resp, HTTPD_RESP_USE_STRLEN);
+    return ESP_OK;
+}
+
+static const httpd_uri_t helloWorld = {
+    .uri = "/hello",
+    .method = HTTP_GET,
+    .handler = GetHelloWorldHandler,
+    .user_ctx = "Hello World!"
+};
+
+httpd_handle_t startWebserver()
+{
+    httpd_handle_t server = NULL;
+    httpd_config_t config = HTTPD_DEFAULT_CONFIG();
+
+    config.server_port = 9001;
+    config.lru_purge_enable = true;
+
+    // Start server
+    ESP_LOGI(TAG, "Starting server on port %d", config.server_port);
+    if (httpd_start(&server, &config) == ESP_OK) {
+        ESP_LOGI(TAG, "Registering URI handler");
+        httpd_register_uri_handler(server, &helloWorld);
+        return server;
+    }
+
+    ESP_LOGI(TAG, "Error starting web server");
+    return NULL;
+}
+
+esp_err_t stopWebserver(httpd_handle_t server)
+{
+    return httpd_stop(server);
+}
+
+static void connectHandler(void* arg, esp_event_base_t eventBase, int32_t eventID, void* eventData)
+{
+    httpd_handle_t* server = (httpd_handle_t*)arg;
+    if (*server == NULL) {
+        ESP_LOGI(TAG, "Starting webserver");
+        *server = startWebserver();
+    }
+}
+
+static void disconnectHandler(void* arg, esp_event_base_t eventBase, int32_t eventID, void* eventData)
+{
+    httpd_handle_t* server = (httpd_handle_t*)arg;
+    if (*server) {
+        ESP_LOGI(TAG, "Stopping webserver");
+        if (stopWebserver(*server) == ESP_OK)
+            *server = NULL;
+        else
+            ESP_LOGE(TAG, "Failed to stop http server");
+    }
+}

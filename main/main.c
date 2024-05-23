@@ -13,6 +13,7 @@
 #include "driver/gpio.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "nvs_flash.h"
 #include "esp_wifi.h"
 #include "esp_netif.h"
 #include "esp_event.h"
@@ -77,6 +78,9 @@ esp_err_t WifiInitPhase()
 // This is soley just to mess with the esp32 interface
 void app_main(void)
 {
+    // Setup the flash memory
+    ESP_ERROR_CHECK(nvs_flash_init());
+
     // Setup WIFI API
     esp_err_t wifiErr = WifiInitPhase();
     if (wifiErr != ESP_OK) {
@@ -86,4 +90,11 @@ void app_main(void)
 
     // esp_err_t wifiStatus = 
     InitializeMotor(&MotorA);
+
+    EnableMotor(&MotorA);
+
+    while (1) {
+        SpinMotorForward(&MotorA);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
 }

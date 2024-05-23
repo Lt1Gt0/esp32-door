@@ -46,10 +46,7 @@ Motor MotorA = {
 };
 
 static const char* TAG = "WIFI";
-static esp_netif_t* staBinding = NULL;
-static wifi_sta_config_t* wifiConfig = NULL;
 static EventGroupHandle_t wifiEventGroup;
-
 static int retryNum = 0;
 
 static void wifiEventHandler(void* arg, esp_event_base_t eventBase, int32_t eventID, void* eventData)
@@ -74,7 +71,7 @@ static void IpEventHandler(void* arg, esp_event_base_t eventBase, int32_t eventI
         ip_event_got_ip_t* event = (ip_event_got_ip_t*)eventData;
         ESP_LOGI(TAG, "STA IP: " IPSTR, IP2STR(&event->ip_info.ip));
         retryNum = 0;
-        xEventGroupSetBits(wifiEventGroup, WIFI_FAILURE);
+        xEventGroupSetBits(wifiEventGroup, WIFI_SUCCESS);
     }
 }
 
@@ -83,7 +80,7 @@ static void IpEventHandler(void* arg, esp_event_base_t eventBase, int32_t eventI
 // so if it breaks its a skill issue
 esp_err_t WifiInitPhase()
 {
-    esp_err_t status = ESP_FAIL;
+    esp_err_t status = WIFI_FAILURE;
 
     // s1.1 (Setup TCP/IP stack)
     ESP_ERROR_CHECK(esp_netif_init());
@@ -123,6 +120,9 @@ esp_err_t WifiInitPhase()
 
     // Set wifi config
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &staCfg));
+
+    // Start wifi
+    ESP_ERROR_CHECK(esp_wifi_start());
 
     ESP_LOGI(TAG, "STA Init complete");
 

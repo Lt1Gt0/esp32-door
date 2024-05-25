@@ -8,10 +8,12 @@ struct {
   int PIN_ENABLE;
 } typedef Motor;
 
-void InitializeMotor(Motor *m);
-void EnableMotor(Motor *m);
-void DisableMotor(Motor *m);
-void SpinMotorForward(Motor *m);
-void SpinMotorBackward(Motor *m);
+void MotorInitialize(Motor *m);
+void MotorCalibrate(Motor* m);
+void MotorEnable(Motor *m);
+void MotorDisable(Motor *m);
+void MotorSpinForward(Motor *m);
+void MotorSpinBackward(Motor *m);
+
 
 #endif // _MOTOR_H_

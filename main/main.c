@@ -27,12 +27,6 @@
 
 //#include <string.h>
 
-#include "lwip/err.h"
-#include "lwip/sockets.h"
-#include "lwip/sys.h"
-#include "lwip/netdb.h"
-#include "lwip/dns.h"
-
 #define WIFI_SUCCESS 1 << 0
 #define WIFI_FAILURE 1 << 1
 #define TCP_SUCCESS 1 << 0
@@ -168,9 +162,11 @@ void app_main(void)
     }
 
     // Setup the motors
-    InitializeMotor(&MotorA);
+    MotorInitialize(&MotorA);
 
     server = startWebserver();
+    serverSetMotorACtx(&MotorA);
+    
     while (server) {
         sleep(5);
     }

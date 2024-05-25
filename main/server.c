@@ -9,18 +9,42 @@
 #include <esp_http_server.h>
 #include <esp_wifi.h>
 #include <esp_system.h>
+#include "motor.h"
 
 static const char* TAG = "server";
 
+// I know this is probably a dumb way to do this but this is my first
+// time working with 'c' in this way so my OOP brain went to this
+static Motor* motorA = NULL;
+void serverSetMotorACtx(Motor* m)
+{
+    motorA = m;
+}
+
+
 static esp_err_t GetHelloWorldHandler(httpd_req_t* req)
 {
-    const char resp[] = "Hello World";
+    // Create a response buffer
+    int respBufSize = sizeof(char) * 100;
+    char* resp = malloc(respBufSize);
+    memset((void*)resp, '\0', respBufSize);
+
+    if (motorA == NULL) {
+        strcpy(resp, "Motor context not set");
+    } else {
+        MotorEnable(motorA);
+        MotorSpinForward(motorA);
+        sleep(5);
+        MotorDisable(motorA);
+        strcpy(resp, "Motor done spinning");
+    }
+
     httpd_resp_send(req, resp, HTTPD_RESP_USE_STRLEN);
     return ESP_OK;
 }
 
 static const httpd_uri_t helloWorld = {
-    .uri = "/hello",
+    .uri = "/open",
     .method = HTTP_GET,
     .handler = GetHelloWorldHandler,
     .user_ctx = "Hello World!"

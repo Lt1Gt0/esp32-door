@@ -1,7 +1,7 @@
 #include "motor.h"
 #include "driver/gpio.h"
 
-void InitializeMotor(Motor* m)
+void MotorInitialize(Motor* m)
 {
     // Reset pins
     gpio_reset_pin(m->PIN_ENABLE);
@@ -14,27 +14,32 @@ void InitializeMotor(Motor* m)
     gpio_set_direction(m->PIN_IN_2, GPIO_MODE_OUTPUT);
 }
 
-void EnableMotor(Motor* m)
+void MotorCalibrate(Motor* m)
+{
+
+}
+
+void MotorEnable(Motor* m)
 {
     gpio_set_level(m->PIN_ENABLE, 1);
     gpio_set_level(m->PIN_IN_1, 0);
     gpio_set_level(m->PIN_IN_2, 0);
 }
 
-void DisableMotor(Motor* m)
+void MotorDisable(Motor* m)
 {
     gpio_set_level(m->PIN_ENABLE, 0);
     gpio_set_level(m->PIN_IN_1, 0);
     gpio_set_level(m->PIN_IN_2, 0);
 }
 
-void SpinMotorForward(Motor* m)
+void MotorSpinForward(Motor* m)
 {
     gpio_set_level(m->PIN_IN_1, 1);
     gpio_set_level(m->PIN_IN_2, 0);
 }
 
-void SpinMotorBackward(Motor* m)
+void MotorSpinBackward(Motor* m)
 {
     gpio_set_level(m->PIN_IN_1, 0);
     gpio_set_level(m->PIN_IN_2, 1);

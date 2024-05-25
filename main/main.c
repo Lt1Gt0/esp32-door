@@ -164,8 +164,8 @@ void app_main(void)
     // Setup the motors
     MotorInitialize(&MotorA);
 
-    server = startWebserver();
-    serverSetMotorACtx(&MotorA);
+    server = ServerStart();
+    ServerSetMotorACtx(&MotorA);
     
     while (server) {
         sleep(5);

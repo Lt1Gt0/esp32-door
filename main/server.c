@@ -16,7 +16,7 @@ static const char* TAG = "server";
 // I know this is probably a dumb way to do this but this is my first
 // time working with 'c' in this way so my OOP brain went to this
 static Motor* motorA = NULL;
-void serverSetMotorACtx(Motor* m)
+void ServerSetMotorACtx(Motor* m)
 {
     motorA = m;
 }
@@ -43,14 +43,13 @@ static esp_err_t GetHelloWorldHandler(httpd_req_t* req)
     return ESP_OK;
 }
 
-static const httpd_uri_t helloWorld = {
+static const httpd_uri_t open = {
     .uri = "/open",
     .method = HTTP_GET,
     .handler = GetHelloWorldHandler,
-    .user_ctx = "Hello World!"
 };
 
-httpd_handle_t startWebserver()
+httpd_handle_t ServerStart()
 {
     httpd_handle_t server = NULL;
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
@@ -62,7 +61,7 @@ httpd_handle_t startWebserver()
     ESP_LOGI(TAG, "Starting server on port %d", config.server_port);
     if (httpd_start(&server, &config) == ESP_OK) {
         ESP_LOGI(TAG, "Registering URI handler");
-        httpd_register_uri_handler(server, &helloWorld);
+        httpd_register_uri_handler(server, &open);
         return server;
     }
 
@@ -70,7 +69,7 @@ httpd_handle_t startWebserver()
     return NULL;
 }
 
-esp_err_t stopWebserver(httpd_handle_t server)
+esp_err_t ServerStop(httpd_handle_t server)
 {
     return httpd_stop(server);
 }
@@ -80,7 +79,7 @@ static void connectHandler(void* arg, esp_event_base_t eventBase, int32_t eventI
     httpd_handle_t* server = (httpd_handle_t*)arg;
     if (*server == NULL) {
         ESP_LOGI(TAG, "Starting webserver");
-        *server = startWebserver();
+        *server = ServerStart();
     }
 }
 
@@ -89,7 +88,7 @@ static void disconnectHandler(void* arg, esp_event_base_t eventBase, int32_t eve
     httpd_handle_t* server = (httpd_handle_t*)arg;
     if (*server) {
         ESP_LOGI(TAG, "Stopping webserver");
-        if (stopWebserver(*server) == ESP_OK)
+        if (ServerStop(*server) == ESP_OK)
             *server = NULL;
         else
             ESP_LOGE(TAG, "Failed to stop http server");

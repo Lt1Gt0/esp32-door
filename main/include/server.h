@@ -6,8 +6,8 @@
 #include <esp_system.h>
 #include "motor.h"
 
-httpd_handle_t startWebserver();
-esp_err_t stopWebserver(httpd_handle_t server);
-void serverSetMotorACtx(Motor* m);
+httpd_handle_t ServerStart();
+esp_err_t ServerStop(httpd_handle_t server);
+void ServerSetMotorACtx(Motor* m);
 
 #endif // _SERVER_H_

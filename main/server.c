@@ -22,7 +22,7 @@ void ServerSetMotorACtx(Motor* m)
 }
 
 
-static esp_err_t GetHelloWorldHandler(httpd_req_t* req)
+static esp_err_t GetOpenHandler(httpd_req_t* req)
 {
     // Create a response buffer
     int respBufSize = sizeof(char) * 100;
@@ -46,7 +46,7 @@ static esp_err_t GetHelloWorldHandler(httpd_req_t* req)
 static const httpd_uri_t open = {
     .uri = "/open",
     .method = HTTP_GET,
-    .handler = GetHelloWorldHandler,
+    .handler = GetOpenHandler,
 };
 
 httpd_handle_t ServerStart()

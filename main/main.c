@@ -1,6 +1,5 @@
 /* TODO
  * Control Motor from webserver
- *  Toggle Spin direction of motor from web server
  *  Show status of motor spinning or not spinning
  *  Show direction of spin from web server
  *  Determine if the motor is unable to turn (e.g. door closed so dont try to break motor (or door) to spin)

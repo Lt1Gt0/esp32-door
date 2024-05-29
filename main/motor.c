@@ -44,3 +44,8 @@ void MotorSpinBackward(Motor* m)
     gpio_set_level(m->PIN_IN_1, 0);
     gpio_set_level(m->PIN_IN_2, 1);
 }
+
+int IsMovable(Motor* m)
+{
+    return 0;
+}
